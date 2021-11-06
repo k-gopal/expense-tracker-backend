@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - rm -rf .git/
+      # - sed -i 's/envVpcSecurityGroup/'"$envVpcSecurityGroup"'/g' template.yml
+      # - sed -i 's/envVpcSubnet1/'"$envVpcSubnet1"'/g' template.yml
+      # - sed -i 's/envVpcSubnet2/'"$envVpcSubnet2"'/g' template.yml
+      - cd src/common/nodejs/node_modules/bpd-libs/
+      - npm install
+      - npm prune --production
+      - rm -rf package-lock.json
+      - cd ../../../../..
+  build:
+    commands:
+      - sam build
+      # - aws cloudformation package --template template.yml --s3-bucket utec-dm-new-deploy --s3-prefix utec-polaris-dev/build-artifacts --output-template polaris-template-output.yml
+  post_build:
+    commands:
+      - sam deploy --config-env $envDeployment --no-progressbar --capabilities "CAPABILITY_IAM" #--parameter-overrides DBHOST=\"$envDBHost\" DBNAME=\"$envDBName\" DBUSER=\"$envDBUser\" DBPASSWORD=\"$envDBPassword\" BUCKETNAME=\"$envBucketName\" AWSREGIONNAME=\"$envRegion\" DEPLOYMENT=\"$envDeployment\" USERPOOLID=\"$envCognitoPoolID\" CLIENTID=\"$envCognitoClientID\" REFERALSECRETKEY=\"$envReferalSecretKey\" REFERALBASEURL=\"$envReferalBaseURL\" COGNITOCONFIGKEY=\"$envCognitoConfigKey\" JWTPUBKEY=\"$envJwtPubKey\" CASHFREEBASEURL=\"$envCashfreeBaseUrl\" CASHFREEAUTHURL=\"$envCashfreeAuthUrl\" CASHFREEPAYOUTURL=\"$envCashfreePayoutUrl\" CASHFREESECRETKEY=\"$envCashfreeSecretKey\" CASHFREECLIENTID=\"$envCashfreeClientId\" CASHFREEPUBKEY=\"$envCashfreePubKey\" CASHFREEENV=\"$envCashfreeEnv\"
