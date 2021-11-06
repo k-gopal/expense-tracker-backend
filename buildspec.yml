@@ -7,7 +7,7 @@ phases:
       # - sed -i 's/envVpcSecurityGroup/'"$envVpcSecurityGroup"'/g' template.yml
       # - sed -i 's/envVpcSubnet1/'"$envVpcSubnet1"'/g' template.yml
       # - sed -i 's/envVpcSubnet2/'"$envVpcSubnet2"'/g' template.yml
-      - cd src/common/nodejs/node_modules/bpd-libs/
+      - cd src/common/nodejs/node_modules/expense-libs/
       - npm install
       - npm prune --production
       - rm -rf package-lock.json
