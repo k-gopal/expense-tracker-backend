@@ -75,7 +75,7 @@ typings/
 
 # dotenv environment variables file
 .env
-.aws-sam
+.aws-sam/
 
 
 ### OSX ###
