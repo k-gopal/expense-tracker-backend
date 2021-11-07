@@ -7,7 +7,7 @@ Parameters:
   DBSTRING:
     Description: "Required. The Database hostname or URL"
     Type: "String"
-    Default: "mongodb+srv://<host>:<password>@expense-tracker.yvyiz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    Default: "mongodb+srv://<host>:<password>@expense-tracker.yvyiz.mongodb.net/expense-tracker?retryWrites=true&w=majority"
   DBUSER:
     Description: "Required. Db user"
     Type: "String"
@@ -15,7 +15,7 @@ Parameters:
   DBPASSWORD:
     Description: "Required. Db password"
     Type: "String"
-    Default: "Gopal@T2910"
+    Default: "Gopal%40T2910"
   DEPLOYMENT:
     Description: "Environment name - dev, test, stage, preprod, prod etc."
     Type: "String"
@@ -60,6 +60,26 @@ Globals:
     Timeout: 60
 
 Resources:
+  # lambdaExecutionRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+  #       - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+  #       - arn:aws:iam::aws:policy/AWSLambdaExecute
+  #       - arn:aws:iam::aws:policy/AmazonS3FullAccess
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - lambda.amazonaws.com
+  #           Action:
+  #             - sts:AssumeRole
+
   CommonCodeLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -73,15 +93,38 @@ Resources:
       BuildMethod: makefile
 
   HelloFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/handlers/hello
       Handler: hello.lambdaHandler
-      Runtime: nodejs14.x
+      # Role: !GetAtt lambdaExecutionRole.Arn
+      Description: Hello function lambda
       Events:
         Hello:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
           Properties:
             Path: /hello
             Method: get
+      Layers:
+        - !Ref CommonCodeLayer
+    Metadata:
+      BuildMethod: nodejs14.x
+
+  CreateUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/createUser
+      Handler: createUser.lambdaHandler
+      # Role: !GetAtt lambdaExecutionRole.Arn
+      Description: A lambda to create a new user
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /createUser
+            Method: post
+      Layers:
+        - !Ref CommonCodeLayer
+    Metadata:
+      BuildMethod: nodejs14.x
 
