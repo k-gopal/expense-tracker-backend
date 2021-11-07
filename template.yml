@@ -2,10 +2,62 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   expense-tracker-backend
+
+Parameters:
+  DBSTRING:
+    Description: "Required. The Database hostname or URL"
+    Type: "String"
+    Default: "mongodb+srv://<host>:<password>@expense-tracker.yvyiz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  DBUSER:
+    Description: "Required. Db user"
+    Type: "String"
+    Default: "gopalk"
+  DBPASSWORD:
+    Description: "Required. Db password"
+    Type: "String"
+    Default: "Gopal@T2910"
+  DEPLOYMENT:
+    Description: "Environment name - dev, test, stage, preprod, prod etc."
+    Type: "String"
+    Default: "envDeployment"
+  AWSREGIONNAME:
+    Description: "Required. S3 AWS Region"
+    Type: "String"
+    Default: "ap-south-1"
   
 Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+      AllowCredentials: "'*'"
+    GatewayResponses:
+      DEFAULT_4xx:
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+            Access-Control-Allow-Credentials: "'*'"
+      DEFAULT_5xx:
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+            Access-Control-Allow-Credentials: "'*'"
   Function:
-    Timeout: 3
+    Environment:
+      Variables:
+        DB_STRING: !Ref DBSTRING
+        DB_USER: !Ref DBUSER
+        DB_PASSWORD: !Ref DBPASSWORD
+        DEPLOYMENT: !Ref DEPLOYMENT
+        AWS_REGION_NAME: !Ref AWSREGIONNAME
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 60
 
 Resources:
   CommonCodeLayer:
